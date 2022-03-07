@@ -24,6 +24,7 @@ input TitleFormat {
 }
 
 type Review {
+    ipAddress: String
     username: String
     starScore: Int
     submittedDate: DateTime

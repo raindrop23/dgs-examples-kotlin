@@ -49,6 +49,15 @@ class ReviewsDataFetcher(private val reviewsService: ReviewsService) {
         return reviewsDataLoader.load(show.id)
     }
 
+    @DgsData(parentType = DgsConstants.REVIEW.TYPE_NAME, field = DgsConstants.REVIEW.IpAddress)
+    fun ipAddress(dfe: DgsDataFetchingEnvironment) =
+        dfe.getSource<Review>().starScore.let {
+            if (it != null && it <= 2) {
+                throw Exception("cannot get ipAddress")
+            }
+            "1.1.1.1"
+        }
+
     @DgsMutation
     fun addReview(@InputArgument review: SubmittedReview): List<Review> {
         reviewsService.saveReview(review)
