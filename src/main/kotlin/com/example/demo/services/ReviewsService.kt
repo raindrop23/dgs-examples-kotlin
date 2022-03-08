@@ -114,6 +114,11 @@ class DefaultReviewsService(private val showsService: ShowsService): ReviewsServ
     }
 
     override fun getReviewsPublisher(): Publisher<Review> {
-        return reviewsPublisher
+        return reviewsPublisher.map {
+            if (it.starScore != null && it.starScore <= 2) {
+                throw Exception("error 26970")
+            }
+            it
+        }
     }
 }
