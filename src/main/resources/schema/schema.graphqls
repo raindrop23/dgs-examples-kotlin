@@ -8,6 +8,7 @@ type Mutation {
 }
 
 type Subscription {
+    imageAdded: Image
     reviewAdded(showId: Int!): Review
 }
 

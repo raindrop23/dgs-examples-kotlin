@@ -18,6 +18,7 @@ package com.example.demo.datafetchers
 
 import com.example.demo.dataloaders.ReviewsDataLoader
 import com.example.demo.generated.DgsConstants
+import com.example.demo.generated.types.Image
 import com.example.demo.generated.types.Review
 import com.example.demo.generated.types.Show
 import com.example.demo.generated.types.SubmittedReview
@@ -25,7 +26,11 @@ import com.example.demo.services.ReviewsService
 import com.netflix.graphql.dgs.*
 import org.dataloader.DataLoader
 import org.reactivestreams.Publisher
+import java.time.Duration
+import java.util.UUID
 import java.util.concurrent.CompletableFuture
+import reactor.core.publisher.Flux
+import java.time.Instant
 
 @DgsComponent
 class ReviewsDataFetcher(private val reviewsService: ReviewsService) {
@@ -55,6 +60,15 @@ class ReviewsDataFetcher(private val reviewsService: ReviewsService) {
 
         return reviewsService.reviewsForShow(review.showId)?: emptyList()
     }
+
+    @DgsSubscription
+    fun imageAdded(): Publisher<Image> = Flux.interval(Duration.ofMillis(333)).map({
+        Image("https://dgs.example.com/${UUID.randomUUID().toString()}")
+    }).doOnSubscribe { println("debug: ${Instant.now()}: subscription") }
+        .doOnCancel { println("debug: ${Instant.now()}: cancel") }
+        .doOnComplete { println("debug: ${Instant.now()}: complete") }
+        .doOnError { println("debug: ${Instant.now()}: error") }
+        .doFinally { println("debug: ${Instant.now()}: doOnFinally") }
 
     @DgsSubscription
     fun reviewAdded(@InputArgument showId: Int): Publisher<Review> {
